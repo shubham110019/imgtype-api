@@ -11,56 +11,31 @@
 </head>
 <body>
   <div class="container">
-
-    
+<div class="row">
+    <div class="col-md-12 my-5">
   <h1>Image Converter</h1>
   <form id="convert-form" enctype="multipart/form-data">
     <input type="file" name="image" accept="image/*" multiple>
     <select name="format">
-      <option value="3fr">3FR</option>
-      <option value="arw">ARW</option>
       <option value="avif">AVIF</option>
       <option value="bmp">BMP</option>
-      <option value="cr2">CR2</option>
-      <option value="cr3">CR3</option>
-      <option value="crw">CRW</option>
-      <option value="dcr">DCR</option>
-      <option value="dng">DNG</option>
-      <option value="eps">EPS</option>
-      <option value="erf">ERF</option>
       <option value="gif">GIF</option>
       <option value="heic">HEIC</option>
       <option value="heif">HEIF</option>
-      <option value="icns">ICNS</option>
-      <option value="ico">ICO</option>
-      <option value="jfif">JFIF</option>
       <option value="jpeg">JPEG</option>
       <option value="jpg">JPG</option>
-      <option value="mos">MOS</option>
-      <option value="mrw">MRW</option>
-      <option value="nef">NEF</option>
-      <option value="odd">ODD</option>
-      <option value="odg">ODG</option>
-      <option value="orf">ORF</option>
-      <option value="pef">PEF</option>
       <option value="png">PNG</option>
-      <option value="ppm">PPM</option>
-      <option value="ps">PS</option>
-      <option value="psd">PSD</option>
-      <option value="raf">RAF</option>
-      <option value="raw">RAW</option>
-      <option value="rw2">RW2</option>
       <option value="tif">TIF</option>
       <option value="tiff">TIFF</option>
       <option value="webp">WebP</option>
-      <option value="x3f">X3F</option>
-      <option value="xcf">XCF</option>
-      <option value="xps">XPS</option>
       <option value="svg">SVG</option>
     </select>
     
-    <button type="submit">Convert</button>
+    <button type="submit" class="btn btn-primary">Convert</button>
   </form>
+</div>
+
+<div class="col-md-12">
   <div id="loader">Loading...</div>
   <div id="result">
     <table class="table">
@@ -77,8 +52,8 @@
         <!-- Conversion results will be added here -->
       </tbody>
     </table>
-
-
+  </div>
+  </div>
 
   </div> <!-- Placeholder for the converted image and info -->
 </div>
@@ -99,6 +74,8 @@
 
         const formData = new FormData(form);
 
+        console.log(formData);
+
         try {
           const response = await fetch('http://localhost:3000/convert', {
             method: 'POST',
@@ -114,11 +91,11 @@
             conversionResults.convert.forEach(result => {
               const row = document.createElement('tr');
               row.innerHTML = `
-              <td><img src="${result.downloadLink}" style="max-width: 200px;max-height: 100px;"/></td>
+              <td><img src="${result.downloadLink}" style="max-width: 100px;max-height: 100px;"/></td>
                 <td>${result.originalSize}</td>
                 <td>${result.newImageSize}</td>
                 <td>${result.conversionTime} ms</td>
-                <td><a href="${result.downloadLink}" download>Download</a></td>
+                <td><a href="${result.downloadLink}" download class="btn btn-success">Download</a></td>
               `;
 
               resultTableBody.appendChild(row);
