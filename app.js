@@ -121,6 +121,6 @@ app.post('/convert', checkAuthKey, upload.array('image', 50), async (req, res) =
   }
 });
 
-app.listen(port, () => {
+app.listen(process.env.PORT || port, () => {
   console.log(`Server is running on port ${port}`);
 });
