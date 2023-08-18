@@ -5,6 +5,7 @@ const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const { PDFDocument, rgb } = require('pdf-lib');
 
 const app = express();
 const port = 3000;
@@ -40,16 +41,39 @@ function checkAuthKey(req, res, next) {
   next();
 }
 
-app.post('/convert', checkAuthKey, upload.array('image', 50), async (req, res) => {
+
+app.post('/convert', checkAuthKey, upload.array('image', 10), async (req, res) => {
   try {
 
     const conversionResults = [];
+    const alyErrors = [];
+    let maxImageUploadErrorShown = false;
+
+    const MAX_IMAGE_SIZE = 4 * 1024 * 1024; // 5MB in bytes
+    const MAX_IMAGES = 1;
 
     for (const file of req.files) {
       const inputBuffer = file.buffer;
       const originalSize = inputBuffer.length;
 
       const { format } = req.body; // Use req.body to get format parameter
+
+      console.log(originalSize);
+
+      if (originalSize > MAX_IMAGE_SIZE) {
+        alyErrors.push({
+          error: `${file.originalname} this image size is more than 4mb`,
+        });
+        continue; // Skip to the next file
+      }
+
+      if (req.files.length > MAX_IMAGES) {
+        alyErrors.push({
+          error: `max image upload 2`,
+        });
+        maxImageUploadErrorShown = true; // Set the flag to true to prevent showing the error again
+        break; // Break out of the loop
+      }
 
       const supportedFormats = [
         '3fr', 'arw', 'avif', 'bmp', 'cr2', 'cr3', 'crw', 'dcr', 'dng', 'eps',
@@ -132,7 +156,9 @@ app.post('/convert', checkAuthKey, upload.array('image', 50), async (req, res) =
       
     }
 
-    const responseObject = { convert: conversionResults };
+    const responseObject = { convert: conversionResults,
+      errors: alyErrors
+     };
     // Send the entire conversionResults array as the response
     res.json(responseObject);
   } catch (error) {
@@ -217,8 +243,6 @@ app.post('/compress', checkAuthKey, upload.array('image', 50), async (req, res) 
     res.status(500).json({ error: 'An error occurred during compression' });
   }
 });
-
-
 
 app.listen(process.env.PORT || port, () => {
   console.log(`Server is running on port ${port}`);
